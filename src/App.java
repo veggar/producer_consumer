@@ -17,7 +17,7 @@ public class App {
         consumerThread.start();
 
         try {
-            Thread.sleep(50);
+            Thread.sleep(100);
         } catch (InterruptedException e) {
 			e.printStackTrace();
         }
@@ -80,6 +80,8 @@ public class App {
         public void add(Message message) {
             synchronized (queue) {
                 queue.add(message);
+                String string = String.format("-> [%d] %f (%d)", message.id, message.data, queue.size());
+                System.out.println(string);
             }
         }
 
@@ -129,15 +131,13 @@ public class App {
                     try {
                         dataQueue.waitOnFull();
                     } catch (InterruptedException e) {
-                        break;
+                        e.printStackTrace();
                     }
                 }
                 if (!runFlag) {
                     break;
                 }
                 dataQueue.add(message);
-                String string = String.format("-> [%d] %f (%d)", message.id, message.data, dataQueue.getCount());
-                System.out.println(string);
 
                 dataQueue.notifyAllForEmpty();
             }
@@ -179,7 +179,7 @@ public class App {
                     try {
                         dataQueue.waitOnEmpty();
                     } catch (InterruptedException e) {
-                        break;
+                        e.printStackTrace();
                     }
                 }
                 if (!runFlag) {
@@ -197,8 +197,12 @@ public class App {
         }
 
         public void useMessage(Message message) {
-            String string = String.format("<- [%d] %f (%d)", message.id, message.data, dataQueue.getCount());
-            System.out.println(string);
+            try {
+                String string = String.format("<- [%d] %f (%d)", message.id, message.data, dataQueue.getCount());
+                System.out.println(string);    
+            } catch (Exception e) {
+
+            }
         }
     }
 
